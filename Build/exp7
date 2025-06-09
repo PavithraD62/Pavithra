@@ -1,0 +1,122 @@
+exp7
+step1: create 2 instances
+stet2: rename
+step3: copy public ip go to mobaxterm do the details
+step4: sudo -i
+          hostname ansible-controller
+          bash
+step2: next go to chrome :install ansible on ubuntu
+step3 : paste 4 commands in controller
+step4: give commands :
+ ansible --version
+cat /etc/ansible/ansible.cfg
+ansible-config init --disabled > ansible.cfg
+ls
+ vi ansible.cfg
+search:/host_key and enter 
+click i 
+change true into False
+esc 
+:wq
+
+ mv ansible.cfg /etc/ansible/
+cd /etc/ansible/
+ls	
+ ssh-keygen -t rsa
+click 3 times enter
+
+cd /root/.ssh/
+ls
+ cat id_rsa.pub
+
+go to client1
+commands:
+ cd .ssh/
+ls
+cat authorized_keys
+vi authorized_keys
+inster mode open(i)
+copy the rsa key of controller paste in client1
+esc
+:wq
+cat authorized_keys(to verify)
+
+go to controller : ssh root@172.31.42.48(copy the private key of client1)
+yes and exit
+
+in controller only commands:
+mkdir example1
+touch example1/inventory
+ls
+cd example1
+ls
+cd
+vi example1/inventory
+insert mode
+private ipv4 of client1
+paste it
+esc :wq
+cat example1/inventory
+ls
+ansible all -i example1/inventory -m ping
+vi index.html
+after this paste it
+
+insert(i)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8">
+        <title>Learn Ansible</title>
+        <meta name="description" content="Ths is an Index.html file">
+</head>
+<body>
+        <h1>Welcome to ansible session</h1>
+        <p>Test ansible success</p>
+</body>
+</html>
+:wq
+
+touch apache2-install.yml
+ls
+vi apache2-install.yml
+after this paste it
+
+---
+- name: install apache2 on client servers
+  hosts: all
+  become: yes
+  gather_facts: true
+  vars:
+    web_server: apache2
+  tasks:
+    - name: update cache
+      apt:
+        update_cache: yes
+    - name: install apache2
+      apt:
+        name: "{{ web_server }}"
+        state: present
+    - name: copy
+      copy:
+        src: index.html
+        dest: /var/www/html/
+
+  handlers:
+    - name: Restart apache2
+      service:
+        name: apache2
+        state: restarted
+
+:wq
+cat apache2-install.yml
+ls
+ansible-playbook -i example1/inventory apache2-install.yml --syntax-check
+ansible-playbook -i example1/inventory apache2-install.yml --check
+ansible-playbook -i example1/inventory apache2-install.yml 
+
+go to client1
+systemctl status apache2 
+cd /var/www/html
+ls
+cat index.html
