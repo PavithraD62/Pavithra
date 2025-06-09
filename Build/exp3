@@ -1,0 +1,47 @@
+exp 3
+1.Choose  anew project provide name of the project, choose build system as the Gradle and Gradle DSL as Groovy then click on the create.
+2.And build.gradle file
+
+Build.gradle file
+
+plugins {
+    id 'java'
+    id 'application'  // Add this line
+}
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+repositories {
+    mavenCentral()
+}
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+test {
+    useJUnitPlatform()
+}
+application {
+    mainClass = 'org.example.Main'  // Specify the main class
+}
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'org.example.Main' // Specify the main class here as well
+        )
+    }
+}
+
+3.After adding the gradle file we need to run ./gradlew clean then we need to run the ./gradlew run commands then we will be having a jar file craeted at target folder
+4.Need to run for the  java -jar <jar file>
+
+Build & Run Instructions
+1. Build the Project
+gradle build ---------------------------------  ./gradlew clean
+2. Run the Application
+gradle run   ---------------------------------  ./gradlew run
+3. Create an Executable JAR
+gradle jar
+4. Run the JAR File
+java -jar build/libs/project-name-1.0-SNAPSHOT.jar
+
+jar file will be build--->libs---->copy path
