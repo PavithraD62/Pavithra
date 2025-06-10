@@ -1,0 +1,145 @@
+step1: Create three virtual machines on any cloud platform:
+one for the Jenkins-server, 
+one for the ansible-server, 
+and one for the ansible-client-server. 
+
+Step 2: Open mobaxterm → click on “Session” → “Session settings” window appears → click on “SSH” and fill 
+the fields → click “OK”
+
+in all three instances give this commands first  :
+
+ sudo -i
+ hostname ansible-server
+ bash
+ 
+in chrome install ansible on ubuntu : 4 commends are mentioned below so, copy and paste 
+----In ansible-server----
+sudo apt update
+sudo apt install software-properties-common
+sudo add-apt-repository --yes --update ppa:ansible/ansible
+sudo apt install ansible
+
+paste above 4 commands and then 
+vi deploy.yml
+insert mode(i)-paste
+---
+- name: delpoy to tomcat
+  hosts: tomcat
+  gather_facts: true
+  become: yes
+  tasks:
+    - name: Copy the artifact to the deployment directory
+      copy:
+        src: /home/ubuntu/target/ROOT.war
+        dest: /opt/apache-tomcat-10.1.36/webapps/
+
+esc :wq
+cat deploy.yml 
+
+ vi inventory
+after copy public ip of ansible-client-server
+paste
+:wq
+ cat inventory
+
+go to  jekins-server in mobaxterm  :
+(search in chrome install jenkins on ubnutu-linux)
+
+sudo apt update
+sudo apt install fontconfig openjdk-17-jre
+java -version
+
+after completion of above installation in jenkins 
+
+copy the bellow command and paste  it in jenkins-server itself 
+
+sudo wget -O /etc/apt/keyrings/jenkins-keyring.asc \
+  https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc]" \
+  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+sudo apt-get update
+sudo apt-get install jenkins
+
+
+next go to aws , 
+ in that select jenkins-server instance 
+in that go to security 
+in below there will be security group click on that link 
+
+edit inbound rules (click)
+then click on add rule
+chage port rage from 0 to 8080 and custom to any-where-ipv4
+save rules
+
+
+go to the  instances again 
+there select jenkins server 
+click on networking 
+copy public ip of it 
+go to chrome paste public ipv4:8080                   ex:123.34.22.32:8080
+browser will open 
+copy that   red line   (/var/.......     )
+
+come to mobxterm 
+in jenkins-server paste that red line like  :  cat /var/lib/....... then enter 
+a password will generate  
+
+copy that  passoword go to that jenkins browswer again and 
+paste it on addminsrtation password
+click on first box
+
+interface will open 
+skip and continue as admin
+save and finish
+start using jenkins
+
+ go to manage jenkins
+if manage is not their http://<your-server-ip>:8080/manage
+
+plugins
+avaliable plugins
+search : publish Over SSH
+then click on publish over ssh and install
+
+go to dashboard
+click manage 
+select system
+
+scroll to last
+search upto publish over SSH
+then go to key
+we have created a .pem key while creating the instances 
+open that .pem in notepad and
+paste that in  key ?
+
+then  click add
+name :  ansible-server
+hostname: copy public ip of ansible-server
+user name :  ubuntu
+remote directory give as : /home/ubuntu
+go to adavance 
+click on  use password authentication  and pem key?
+
+again copy the pem key and paste it in  key?
+
+apply and save
+
+
+go to manage jenkins
+there select tools
+maven installation ---- select 
+add maven
+give name as maven 
+apply and save
+
+go to mobxterm
+in jenkins server : ssh-keygen -t rsa
+click enter 3 times 
+
+follow the commands in jenkins server
+cd .ssh/
+ ls
+cat id_rsa.pub
+
+follow pdf
